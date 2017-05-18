@@ -11,6 +11,9 @@
   "bugs": {
     "url": "https://github.com/jabbera/vsts-git-release-tag/issues"
   },
+  "scripts": {
+    "build": "tsc --noUnusedParameters --noUnusedLocals -w -p ./"
+  },
   "homepage": "https://github.com/jabbera/vsts-git-release-tag#readme",
   "devDependencies": {
     "@types/node": "^7.0.18",
