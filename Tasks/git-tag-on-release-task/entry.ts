@@ -29,8 +29,8 @@ async function run() {
 }
 
 async function processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
-    let releaseName: string = tl.getVariable("RELEASE_RELEASENAME");
-    let environmentName: string = tl.getVariable("RELEASE_ENVIRONMENTNAME");
+    let releaseName: string = tl.getVariable("RELEASE_RELEASENAME").replace(" ", "");
+    let environmentName: string = tl.getVariable("RELEASE_ENVIRONMENTNAME").replace(" ", "");
     let tagName: string = `refs/tags/${releaseName}-${environmentName}`;
 
     tl.debug(`Processing artifact: '${artifact.name}' for tag: ${tagName} new commit: ${artifact.commit}`);
@@ -46,7 +46,7 @@ async function processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
         return;
     }
 
-    tl.error(`Unable to create tag: ${tagName} UpdateStatus: ${updateResult.updateStatus} RepositoryId: ${updateResult.repositoryId} Commit: ${updateResult.newObjectId}`);
+    tl.setResult(tl.TaskResult.Failed, `Unable to create tag: ${tagName} UpdateStatus: ${updateResult.updateStatus} RepositoryId: ${updateResult.repositoryId} Commit: ${updateResult.newObjectId}`);
 }
 
 async function doesTagExist(artifact: IArtifactData, tagName: string, gitapi: git.IGitApi): Promise<boolean> {
