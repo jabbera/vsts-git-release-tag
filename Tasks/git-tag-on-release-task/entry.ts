@@ -10,7 +10,7 @@ async function run() {
         printVersion();
 
         let token: string = tl.getEndpointAuthorizationParameter("SystemVssConnection", "AccessToken", false);
-        let collectionUrl: string = tl.getEndpointUrl("SystemVssConnection", false);
+        let collectionUrl: string = tl.getEndpointUrl("SystemVssConnection", false).replace("vsrm.", "");
         let authHandler = vsts.getPersonalAccessTokenHandler(token);
         let connect = new vsts.WebApi(collectionUrl, authHandler);
 
@@ -18,6 +18,10 @@ async function run() {
         let bldapi: bld.IBuildApi = connect.getBuildApi();
 
         let artifactData: IArtifactData[] = await getAllGitArtifacts(bldapi);
+
+        if (artifactData.length === 0) {
+            tl.warning("No TfsGit artifacts found.");
+        }
 
         for (let artifact of artifactData) {
             await processArtifact(artifact, gitapi);
@@ -30,8 +34,7 @@ async function run() {
 
 async function processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
     let releaseName: string = tl.getVariable("RELEASE_RELEASENAME").replace(" ", "");
-    let environmentName: string = tl.getVariable("RELEASE_ENVIRONMENTNAME").replace(" ", "");
-    let tagName: string = `refs/tags/${releaseName}-${environmentName}`;
+    let tagName: string = `refs/tags/${releaseName}`;
 
     tl.debug(`Processing artifact: '${artifact.name}' for tag: ${tagName} new commit: ${artifact.commit}`);
 
@@ -106,11 +109,14 @@ async function getAllGitArtifacts(bldapi: bld.IBuildApi): Promise<IArtifactData[
 
         let name: string = match[1];
         tl.debug(`Getting repository id for artifact: ${name}`);
-        let repositoryId: string = await getRepositoryIdFromBuildNumber(bldapi, Number(tl.getVariable(`RELEASE_ARTIFACTS_${name}_BUILDID`))); // This should really be available via a variable
+        let repositoryId: string = await getRepositoryIdFromBuildNumber(bldapi, name); // This should really be available via a variable
+        if (repositoryId == null) {
+            continue; // Error already logged
+        }
 
         let artifact: IArtifactData = {
             "name": name,
-            "commit": tl.getVariable(`RELEASE_ARTIFACTS_${name}_SOURCEVERSION`),
+            "commit": tl.getVariable(`RELEASE.ARTIFACTS.${name}.SOURCEVERSION`),
             "repositoryId": repositoryId,
         };
 
@@ -120,8 +126,17 @@ async function getAllGitArtifacts(bldapi: bld.IBuildApi): Promise<IArtifactData[
     return artifactNames;
 }
 
-async function getRepositoryIdFromBuildNumber(bldapi: bld.IBuildApi, buildid: number) {
-    let build: bldi.Build = await bldapi.getBuild(buildid);
+async function getRepositoryIdFromBuildNumber(bldapi: bld.IBuildApi, name: string): Promise<string> {
+    let buildidVariable: string = `RELEASE.ARTIFACTS.${name}.BUILDID`;
+    let buildid: string = tl.getVariable(buildidVariable);
+
+    if (buildid === null || buildid === "") {
+        tl.setResult(tl.TaskResult.Failed, `Unable to get build id from variable: ${buildidVariable}`);
+        return null;
+    }
+
+    let build: bldi.Build = await bldapi.getBuild(Number(buildid));
+    tl.debug(`Got repositoryid: ${build.repository.id}`);
     return build.repository.id;
 }
 
