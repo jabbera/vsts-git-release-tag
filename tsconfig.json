@@ -5,6 +5,7 @@
         "sourceMap": true
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "Tasks/git-tag-on-release-task/node_modules"
     ]
 }

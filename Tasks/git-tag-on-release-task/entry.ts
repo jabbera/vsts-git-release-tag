@@ -90,11 +90,12 @@ async function updateTag(artifact: IArtifactData, tagName: string, gitapi: git.I
 
 async function getAllGitArtifacts(bldapi: bld.IBuildApi): Promise<IArtifactData[]> {
     let artifactNames: IArtifactData[] = [];
-    let regexp: RegExp = new RegExp("RELEASE_ARTIFACTS_(.*)_REPOSITORY_PROVIDER", "gi");
+    let regexp: RegExp = new RegExp("RELEASE\.ARTIFACTS\.(.*)\.REPOSITORY\.PROVIDER", "gi");
 
     for (let variableInfo of tl.getVariables()) {
         let match: RegExpExecArray = regexp.exec(variableInfo.name);
         if (match === null) {
+            tl.debug(`No match for variable: ${variableInfo.name}`);
             continue;
         }
 

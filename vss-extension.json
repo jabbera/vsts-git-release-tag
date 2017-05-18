@@ -1,8 +1,8 @@
 {
     "manifestVersion": 1,
-    "id": "release-notes-tasks",
-    "name": "Generate Release Notes",
-    "version": "0.0.11",
+    "id": "git-tag-on-release-task",
+    "name": "Tag Git Artifacts on Release",
+    "version": "0.0.16",
     "publisher": "jabbera",
 	"public": "true",
     "targets": [
@@ -10,11 +10,11 @@
             "id": "Microsoft.VisualStudio.Services"
         }
     ],    
-    "description": "Task for generating release notes during the deployment process. This will use the delta of commits between the last successful release and the current deployment to generate a summary.",
+    "description": "Task for tagging tfs git artifacts during a release. Tag = ReleaseName-EnvironmentName",
     "categories": [
         "Build and release"
     ],
-    "tags": [ "service", "release", "release notes", "email" ],
+    "tags": [ "release", "tag", "git", "artifacts" ],
 	 "content": {
         "license": {
             "path": "license"
@@ -28,10 +28,10 @@
 	],
 	"links": {
         "getstarted": {
-            "uri": "https://github.com/jabbera/release-notes-task"
+            "uri": "https://github.com/jabbera/vsts-git-release-tag.git"
         },
         "support": {
-            "uri": "https://github.com/jabbera/release-notes-task/issues"
+            "uri": "https://github.com/jabbera/vsts-git-release-tag.git/issues"
         }
     },
     "icons": {
@@ -39,18 +39,18 @@
     },
     "files": [
         {
-            "path": "Tasks/GenerateReleaseNotes"
+            "path": "Tasks/git-tag-on-release-task"
         }
     ],
     "contributions": [
         {
-            "id": "generate-release-notes-task",
+            "id": "git-tag-on-release-task",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "Tasks/GenerateReleaseNotes"
+                "name": "Tasks/git-tag-on-release-task"
             }
         }
     ],

@@ -1,5 +1,5 @@
 {
-  "name": "vsts-git-release-tag",
+  "name": "git-tag-on-release-task",
   "version": "1.0.0",
   "description": "vsts extension to tag git repos",
   "repository": {
