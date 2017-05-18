@@ -1,0 +1,60 @@
+{
+    "manifestVersion": 1,
+    "id": "release-notes-tasks",
+    "name": "Generate Release Notes",
+    "version": "0.0.11",
+    "publisher": "jabbera",
+	"public": "true",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "description": "Task for generating release notes during the deployment process. This will use the delta of commits between the last successful release and the current deployment to generate a summary.",
+    "categories": [
+        "Build and release"
+    ],
+    "tags": [ "service", "release", "release notes", "email" ],
+	 "content": {
+        "license": {
+            "path": "license"
+        },
+		"details": {
+			"path": "overview.md"
+		}
+    },
+	"screenshots": [
+	
+	],
+	"links": {
+        "getstarted": {
+            "uri": "https://github.com/jabbera/release-notes-task"
+        },
+        "support": {
+            "uri": "https://github.com/jabbera/release-notes-task/issues"
+        }
+    },
+    "icons": {
+        "default": "extension-icon.png"        
+    },
+    "files": [
+        {
+            "path": "Tasks/GenerateReleaseNotes"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "generate-release-notes-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/GenerateReleaseNotes"
+            }
+        }
+    ],
+	"galleryFlags": [
+		"Public"
+	]
+}

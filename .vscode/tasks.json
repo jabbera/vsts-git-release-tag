@@ -1,0 +1,25 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "tasks": [
+        {
+            "taskName": "build",
+            "command": "${workspaceRoot}\\node_modules\\.bin\\tsc",
+            "isShellCommand": true,
+            "isBuildCommand": true,
+            "args": ["--noUnusedParameters", "--noUnusedLocals", "-w", "-p", "."],
+            "showOutput": "silent",
+            "isBackground": true,
+            "problemMatcher": "$tsc-watch"
+        },
+        {
+            "taskName": "package",
+            "command": "${workspaceRoot}\\node_modules\\.bin\\tfx",
+            "isShellCommand": true,
+            "args": ["extension ", "create", "--json", "--root", "${workspaceRoot}", "--manifest-globs", ""],
+            "showOutput": "always",
+            "echoCommand": true
+        }
+    ]    
+}

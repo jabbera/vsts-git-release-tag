@@ -1,0 +1,25 @@
+{
+  "name": "vsts-git-release-tag",
+  "version": "1.0.0",
+  "description": "vsts extension to tag git repos",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jabbera/vsts-git-release-tag.git"
+  },
+  "author": "Michael Barry",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jabbera/vsts-git-release-tag/issues"
+  },
+  "homepage": "https://github.com/jabbera/vsts-git-release-tag#readme",
+  "devDependencies": {
+    "@types/node": "^7.0.18",
+    "tfx-cli": "^0.4.5",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.2"
+  },
+  "dependencies": {
+    "vso-node-api": "^6.2.2-preview",
+    "vsts-task-lib": "^2.0.5"
+  }
+}

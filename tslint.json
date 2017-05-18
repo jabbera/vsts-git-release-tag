@@ -6,12 +6,6 @@
         ],
         "arrow-parens": true,
         "no-var-keyword": true,
-        "no-unused-variable": [
-            true,
-            {
-                "ignore-pattern": "^_"
-            }
-        ],
         "ordered-imports": [
             true,
             {

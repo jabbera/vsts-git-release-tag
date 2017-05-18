@@ -1,0 +1,55 @@
+{
+    "id": "9FFFCDB8-CFC6-4597-A779-BBEADB0DFBE6",
+    "name": "generate-release-notes-task",
+    "friendlyName": "Generate Release Notes",
+    "description": "Genereate Release Notes from the last sucessful release.",
+    "helpMarkDown": "",
+    "category": "Utility",
+    "author": "Michael Barry",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 11
+    },
+    "instanceNameFormat": "Generate Release Notes",
+    "groups": [ ],
+    "inputs": [
+        {
+            "name": "OutputVariable",
+            "type": "string",
+            "label": "Notes Output Variable",
+            "defaultValue": "ReleaseNotesText",
+            "required": true,
+            "helpMarkDown": "The name of the variable to put the release notes into."
+        }, 
+        {
+            "name": "OutputFileLocation",
+            "type": "string",
+            "label": "Notes File Location",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The file location to put the release notes into. (Empty string means none)"
+        }, 
+        {
+            "name": "CssFile",
+            "type": "filePath",
+            "label": "Css File",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "If you want to provide a custom css, specify it here. For Reference see here: https://github.com/jabbera/release-notes-task/blob/master/Tasks/GenerateReleaseNotes/defaultStyle.css"
+        },
+        {
+            "name": "UploadAsAttachment",
+            "type": "boolean",
+            "label": "Upload as attachment",
+            "defaultValue": "true",
+            "required": true,
+            "helpMarkDown": "Upload the release note as an attachment to the release."
+        }
+    ],
+    "execution": {
+        "Node": {
+            "target": "entry.js"
+        }
+    }
+}
