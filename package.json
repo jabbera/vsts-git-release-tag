@@ -12,7 +12,7 @@
     "url": "https://github.com/jabbera/vsts-git-release-tag/issues"
   },
   "scripts": {
-    "build": "tsc --noUnusedParameters --noUnusedLocals -w -p ./"
+    "build": "node_modules\\.bin\\tsc --noUnusedParameters --noUnusedLocals -p ./"
   },
   "homepage": "https://github.com/jabbera/vsts-git-release-tag#readme",
   "devDependencies": {
