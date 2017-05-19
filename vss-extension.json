@@ -12,8 +12,7 @@
     ],    
     "description": "Task for tagging tfs git artifacts during a release with the release name.",
     "categories": [
-        "Build and release",
-        "Code"
+        "Build and release"
     ],
     "tags": [ "release", "tag", "git", "artifacts", "code", "git tag" ],
 	 "content": {
@@ -25,7 +24,12 @@
 		}
     },
 	"screenshots": [
-	
+	    {
+			"path": "screenshots/screenshot1.png"
+		},
+        {
+			"path": "screenshots/screenshot2.png"
+		}
 	],
 	"links": {
         "getstarted": {

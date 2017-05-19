@@ -1,1 +1,7 @@
-<div>Icons made by <a href="http://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+# Tag Git Source on Release
+
+This is a vsts plugin that will git tag artifact source code with the release name. This makes it very easy to patch in the future if needed. When the task runs it finds all linked artifacts that originated from a TfsGit source repo and tags them with the release name. This is meant to be super simple, no paramters or anything. Just drop in your release pipeline and go.
+
+Note: Currently this take does not support directly linked TfsGit artifacts. They must currently go though a build. Once [this](https://github.com/Microsoft/vsts-agent/issues/976) is fixed, those can be supported as well. I have no plans to support external git repos.
+
+Icons made by Dave Gandy from http://www.flaticon.com is licensed by CC 3.0 BY
