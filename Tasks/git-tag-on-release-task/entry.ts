@@ -10,7 +10,7 @@ async function run() {
         printVersion();
 
         let token: string = tl.getEndpointAuthorizationParameter("SystemVssConnection", "AccessToken", false);
-        let collectionUrl: string = tl.getEndpointUrl("SystemVssConnection", false).replace("vsrm.", "");
+        let collectionUrl: string = tl.getEndpointUrl("SystemVssConnection", false).replace(".vsrm.visualstudio.com", ".visualstudio.com"); // need build
         let authHandler = vsts.getPersonalAccessTokenHandler(token);
         let connect = new vsts.WebApi(collectionUrl, authHandler);
 
