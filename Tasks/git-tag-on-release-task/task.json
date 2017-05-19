@@ -2,7 +2,7 @@
     "id": "985B6178-C07B-4C0A-8D68-4A0504F3D17C",
     "name": "git-tag-on-release-task",
     "friendlyName": "Tag Artifacts",
-    "description": "Tag artifacts during release with ReleaseName-EnvironmentName.",
+    "description": "Tag artifacts during release with ReleaseName.",
     "helpMarkDown": "",
     "category": "Utility",
     "author": "Michael Barry",

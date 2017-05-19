@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "git-tag-on-release-task",
-    "name": "Tag Git Artifacts on Release",
+    "name": "Git tag source on Release",
     "version": "0.0.16",
     "publisher": "jabbera",
 	"public": "true",
@@ -10,11 +10,12 @@
             "id": "Microsoft.VisualStudio.Services"
         }
     ],    
-    "description": "Task for tagging tfs git artifacts during a release. Tag = ReleaseName-EnvironmentName",
+    "description": "Task for tagging tfs git artifacts during a release with the release name.",
     "categories": [
-        "Build and release"
+        "Build and release",
+        "Code"
     ],
-    "tags": [ "release", "tag", "git", "artifacts" ],
+    "tags": [ "release", "tag", "git", "artifacts", "code", "git tag" ],
 	 "content": {
         "license": {
             "path": "license"
@@ -28,10 +29,10 @@
 	],
 	"links": {
         "getstarted": {
-            "uri": "https://github.com/jabbera/vsts-git-release-tag.git"
+            "uri": "https://github.com/jabbera/vsts-git-release-tag"
         },
         "support": {
-            "uri": "https://github.com/jabbera/vsts-git-release-tag.git/issues"
+            "uri": "https://github.com/jabbera/vsts-git-release-tag/issues"
         }
     },
     "icons": {
