@@ -1,6 +1,5 @@
 node_modules/
 _temp/
-.vscode
 gulp-tsc-tmp-*
 .gulp-tsc-tmp-*
 *.vsix

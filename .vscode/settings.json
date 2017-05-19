@@ -1,0 +1,12 @@
+{
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "files.exclude": {
+        ".git": true,
+        "**/node_modules": true,
+        "**/.taskkey": true,
+        "**/*.map": true,
+        "**/*.js": true,
+        "*.vsix": true
+    },
+    "vsicons.presets.angular": false
+}
