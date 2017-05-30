@@ -5,9 +5,15 @@ import * as bldi from "vso-node-api/Interfaces/BuildInterfaces";
 import * as giti from "vso-node-api/Interfaces/GitInterfaces";
 import * as tl from "vsts-task-lib/task";
 
+const defaultSearchPattern: string = "\\s+";
+const defaultRegexFlags: string = "g";
+const defaultReplacePattern: string = "";
+
 async function run() {
     try {
         printVersion();
+
+        let tagName: string = generateTag(tl.getVariable("RELEASE_RELEASENAME"));
 
         let token: string = tl.getEndpointAuthorizationParameter("SystemVssConnection", "AccessToken", false);
         let collectionUrl: string = tl.getEndpointUrl("SystemVssConnection", false).replace(".vsrm.visualstudio.com", ".visualstudio.com"); // need build
@@ -24,7 +30,7 @@ async function run() {
         }
 
         for (let artifact of artifactData) {
-            await processArtifact(artifact, gitapi);
+            await processArtifact(artifact, gitapi, tagName);
         }
     }
     catch (err) {
@@ -32,9 +38,32 @@ async function run() {
     }
 }
 
-async function processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
-    let releaseName: string = tl.getVariable("RELEASE_RELEASENAME").replace(" ", "");
-    let tagName: string = `refs/tags/${releaseName}`;
+function getInputOrDefault(inputName: string, defaultValue: string) {
+    let value: string = tl.getInput(inputName, false);
+    if (value != null) {
+        return value;
+    }
+
+    return defaultValue;
+}
+
+function generateTag(releaseName: string): string {
+    let searchRegex: string = getInputOrDefault("searchRegex", defaultSearchPattern);
+    let regexFlags: string = getInputOrDefault("regexFlags", defaultRegexFlags);
+    let replacePattern: string = getInputOrDefault("replacePattern", defaultReplacePattern);
+
+    tl.debug(`Search Regex: '${searchRegex}', Replace Pattern: '${replacePattern}', flags: '${regexFlags}'`);
+
+    let regex: RegExp = new RegExp(searchRegex, regexFlags);
+
+    let tagName: string = releaseName.replace(regex, replacePattern);
+
+    tl.debug(`TagName: '${tagName}'`);
+
+    return tagName;
+}
+async function processArtifact(artifact: IArtifactData, gitapi: git.IGitApi, tagName: string) {
+    tagName = `refs/tags/${tagName}`;
 
     tl.debug(`Processing artifact: '${artifact.name}' for tag: ${tagName} new commit: ${artifact.commit}`);
 

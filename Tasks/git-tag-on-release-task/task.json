@@ -12,8 +12,41 @@
         "Patch": 16
     },
     "instanceNameFormat": "Tag Artifacts",
-    "groups": [ ],
-    "inputs": [        
+    "groups": [ 
+        {
+            "name": "advanced",
+            "displayName": "Advanced",
+            "isExpanded": false
+        }
+    ],
+    "inputs": [
+        {
+            "name": "searchRegex",
+            "type": "string",
+            "label": "Search Regex",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The regex to select replacement values. Default is: \\s+",
+            "groupName": "advanced"
+        },
+        {
+            "name": "regexFlags",
+            "type": "string",
+            "label": "Regex Flags",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The flags to the regex. Default is: g",
+            "groupName": "advanced"
+        },
+        {
+            "name": "replacePattern",
+            "type": "string",
+            "label": "Sample String",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The replacement patten corresponding to the regex above. Default is empty string",
+            "groupName": "advanced"
+        }
     ],
     "execution": {
         "Node": {
