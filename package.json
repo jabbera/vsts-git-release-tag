@@ -1,7 +1,7 @@
 {
   "name": "git-tag-on-release-task",
   "version": "1.0.0",
-  "description": "vsts extension to tag git repos",
+  "description": "VSTS extension to tag or branch git repos",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jabbera/vsts-git-release-tag.git"
@@ -12,17 +12,17 @@
     "url": "https://github.com/jabbera/vsts-git-release-tag/issues"
   },
   "scripts": {
-    "build": "node_modules\\.bin\\tsc --noUnusedParameters --noUnusedLocals -p ./"
+    "build": "node_modules\\.bin\\tsc --noUnusedParameters --noUnusedLocals --traceResolution -p ./"
   },
   "homepage": "https://github.com/jabbera/vsts-git-release-tag#readme",
   "devDependencies": {
     "@types/node": "^7.0.18",
     "tfx-cli": "^0.4.5",
     "tslint": "^5.2.0",
-    "typescript": "^2.3.2"
+    "typescript": "^2.3.4"
   },
   "dependencies": {
-    "vso-node-api": "^6.2.2-preview",
+    "vso-node-api": "^6.2.4-preview",
     "vsts-task-lib": "^2.0.5"
   }
 }

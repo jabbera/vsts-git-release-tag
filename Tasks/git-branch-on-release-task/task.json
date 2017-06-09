@@ -1,0 +1,64 @@
+{
+    "id": "E2E8CA10-A13A-4892-ACAC-842463FC94B3",
+    "name": "git-branch-on-release-task",
+    "friendlyName": "Branch Artifacts",
+    "description": "Branch artifacts source during release with ReleaseName.",
+    "helpMarkDown": "",
+    "category": "Utility",
+    "author": "Michael Barry",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 16
+    },
+    "instanceNameFormat": "Branch Artifacts",
+    "groups": [ 
+        {
+            "name": "advanced",
+            "displayName": "Advanced",
+            "isExpanded": false
+        }
+    ],
+    "inputs": [
+        {
+            "name": "branchFolder",
+            "type": "string",
+            "label": "Branch Folder",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The folder to branch into: /refs/heads/<branchFolder>/<regexed releaseName>"
+        },
+        {
+            "name": "searchRegex",
+            "type": "string",
+            "label": "Search Regex",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The regex to select replacement values. Default is: \\s+",
+            "groupName": "advanced"
+        },
+        {
+            "name": "regexFlags",
+            "type": "string",
+            "label": "Regex Flags",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The flags to the regex. Default is: g",
+            "groupName": "advanced"
+        },
+        {
+            "name": "replacePattern",
+            "type": "string",
+            "label": "Sample String",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The replacement patten corresponding to the regex above. Default is empty string",
+            "groupName": "advanced"
+        }
+    ],
+    "execution": {
+        "Node": {
+            "target": "entry.js"
+        }
+    }
+}
