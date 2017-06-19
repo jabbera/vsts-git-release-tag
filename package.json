@@ -11,15 +11,16 @@
   "bugs": {
     "url": "https://github.com/jabbera/vsts-git-release-tag/issues"
   },
-  "scripts": {
-    "build": "node_modules\\.bin\\tsc --noUnusedParameters --noUnusedLocals --traceResolution -p ./"
-  },
   "homepage": "https://github.com/jabbera/vsts-git-release-tag#readme",
   "devDependencies": {
     "@types/node": "^7.0.18",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-typescript": "^3.1.7",
     "tfx-cli": "^0.4.5",
     "tslint": "^5.2.0",
-    "typescript": "^2.3.4"
+    "typescript": "^2.3.4",
+    "yargs": "^8.0.2"
   },
   "dependencies": {
     "vso-node-api": "^6.2.4-preview",

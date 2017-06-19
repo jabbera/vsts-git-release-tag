@@ -39,7 +39,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch tag task",
-            "program": "${workspaceRoot}\\Tasks\\git-branch-on-release-task\\entry.js",
+            "program": "${workspaceRoot}\\release\\git-branch-on-release-task\\entry.js",
             "cwd": "${workspaceRoot}",
             "outFiles": [],
             "sourceMaps": true,
