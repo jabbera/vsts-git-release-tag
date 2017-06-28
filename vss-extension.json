@@ -14,7 +14,7 @@
     "categories": [
         "Build and release"
     ],
-    "tags": [ "release", "tag", "git", "artifacts", "code", "git tag", "branch", "git brancg" ],
+    "tags": [ "release", "tag", "git", "artifacts", "code", "git tag", "branch", "git branch" ],
 	 "content": {
         "license": {
             "path": "license"

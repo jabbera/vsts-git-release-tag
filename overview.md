@@ -4,4 +4,7 @@ I find tagging or branching sources on every build is too much noise. There are 
 
 Note: Currently this take does not support directly linked TfsGit artifacts. They must currently go though a build. Once [this](https://github.com/Microsoft/vsts-agent/issues/976) is fixed, those can be supported as well. I have no plans to support external git repos.
 
+  * Changes in 2.0.2
+    * New branch task
+
 Icons made by Dave Gandy from http://www.flaticon.com is licensed by CC 3.0 BY
