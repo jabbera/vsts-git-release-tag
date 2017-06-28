@@ -1,0 +1,16 @@
+{
+  "name": "git-branch-on-release-task",
+  "version": "0.0.7",
+  "description": "vsts release notes task",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jabbera/vsts-git-release-tag.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "vso-node-api": "^6.2.2-preview",
+    "vsts-task-lib": "^2.0.5"
+  }
+}

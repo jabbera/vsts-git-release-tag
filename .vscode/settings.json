@@ -5,7 +5,7 @@
         "**/node_modules": true,
         "**/.taskkey": true,
         "**/*.map": true,
-        "**/*.js": true,
+        "Tasks/**/*.js": true,
         "*.vsix": true
     },
     "vsicons.presets.angular": false

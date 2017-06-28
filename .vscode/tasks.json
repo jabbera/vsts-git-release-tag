@@ -5,13 +5,13 @@
     "tasks": [
         {
             "taskName": "build",
-            "command": "${workspaceRoot}\\node_modules\\.bin\\tsc",
+            "command": "${workspaceRoot}\\node_modules\\.bin\\gulp",
             "isShellCommand": true,
             "isBuildCommand": true,
-            "args": ["--noUnusedParameters", "--noUnusedLocals", "-w", "-p", "."],
+            "args": ["watch"],
             "showOutput": "silent",
             "isBackground": true,
-            "problemMatcher": "$tsc-watch"
+            "problemMatcher": "$tsc"
         },
         {
             "taskName": "package",
