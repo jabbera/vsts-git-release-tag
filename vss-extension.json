@@ -31,13 +31,9 @@
 			"path": "screenshots/screenshot2.png"
 		}
 	],
-	"links": {
-        "getstarted": {
-            "uri": "https://github.com/jabbera/vsts-git-release-tag"
-        },
-        "support": {
-            "uri": "https://github.com/jabbera/vsts-git-release-tag/issues"
-        }
+	"repository": {
+        "type":"git",
+        "uri": "https://github.com/jabbera/vsts-git-release-tag"
     },
     "icons": {
         "default": "extension-icon.png"        
