@@ -9,8 +9,8 @@
             "request": "launch",
             "name": "Launch branch task",
             "program": "${workspaceRoot}\\Tasks\\git-branch-on-release-task\\entry.js",
-            "cwd": "${workspaceRoot}",
-            "outFiles": [],
+            "cwd": "${workspaceRoot}\\Tasks\\git-branch-on-release-task",
+            "outFiles": ["${workspaceRoot}\\Tasks\\git-branch-on-release-task\\*.js"],
             "sourceMaps": true,
             "env": {
                 // This is the tag to be created
@@ -26,36 +26,6 @@
                 "INPUT_searchRegex": "",
                 "INPUT_replacePattern": "",
                 "INPUT_branchFolder": "patch/subpatch/",
-
-
-                // Set these as an environment variables
-                //"ENDPOINT_AUTH_PARAMETER_SystemVssConnection_AccessToken": "<Your token>",
-                //"ENDPOINT_URL_SystemVssConnection": "https://<your account>.vsrm.visualstudio.com/",
-
-                "VSTS_PUBLIC_VARIABLES": "[\"RELEASE.ARTIFACTS.MASTER.BRANCH.REPOSITORY.PROVIDER\", \"RELEASE.ARTIFACTS.MASTER.BRANCH.SOURCEVERSION\", \"RELEASE.ARTIFACTS.MASTER.BRANCH.BUILDID\", \"RELEASE.RELEASENAME\"]"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch tag task",
-            "program": "${workspaceRoot}\\release\\git-branch-on-release-task\\entry.js",
-            "cwd": "${workspaceRoot}",
-            "outFiles": [],
-            "sourceMaps": true,
-            "env": {
-                // This is the tag to be created
-                "RELEASE_RELEASENAME": "Mike - 1",
-                // This only supports TfsGit currently. 
-                "RELEASE_ARTIFACTS_MASTER_BRANCH_REPOSITORY_PROVIDER": "TfsGit",
-                // The commit to tag
-                "RELEASE_ARTIFACTS_MASTER_BRANCH_SOURCEVERSION": "b950f0e25df229dee0fe7ff5ff7a6194f9580b21",
-                // The build id to get the repository id from. This won't be needed onece: https://github.com/Microsoft/vsts-agent/issues/976 is completed.
-                "RELEASE_ARTIFACTS_MASTER_BRANCH_BUILDID": "27",
-                // Regex Settings
-                "INPUT_regexFlags": "",
-                "INPUT_searchRegex": "",
-                "INPUT_replacePattern": ""
 
 
                 // Set these as an environment variables
