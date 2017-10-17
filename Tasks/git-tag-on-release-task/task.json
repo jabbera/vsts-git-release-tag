@@ -41,7 +41,7 @@
         {
             "name": "replacePattern",
             "type": "string",
-            "label": "Sample String",
+            "label": "Replacement Pattern",
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "The replacement patten corresponding to the regex above. Default is empty string",

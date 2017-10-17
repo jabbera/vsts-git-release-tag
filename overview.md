@@ -4,6 +4,28 @@ I find tagging or branching sources on every build is too much noise. There are 
 
 Note: Currently this take does not support directly linked TfsGit artifacts. They must currently go though a build. Once [this](https://github.com/Microsoft/vsts-agent/issues/976) is fixed, those can be supported as well. I have no plans to support external git repos.
 
+Advanced Settings Documentation:
+
+Tagging and Branching
+
+You can control the name of the tag or branch by using the advanced settings. You can specify a regex that MUST match the release name while including one or more capture groups. ([Regex modifiers](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) are also settable via the RegEx flags setting). Using the replacement pattern you can reference the capture groups from the regex to build the desired string. 
+
+For example:
+
+Release Name Format: Core Release-\$(Build.BuildNumber)-\$(rev:r)
+Release Name Instance Example: Release 3.0.17270.8-1
+Regex: Core Release-([0-9]+.[0-9]+.[0-9]+.[0-9]+)-[0-9]+
+Replacement Pattern: v$1
+
+This would yield a tag or branch on the source artifacts of: v3.0.17270.8
+
+Branching:
+
+The branch folder allows you to specify a subfolder to branch to. Adding to the example above. If the Branch Folder was set to: 'patch' the ref that would be created is: /refs/heads/patch/v3.0.17270.8
+
+  * Changes in 2.0.4
+    * Fix label for "Sample String"
+    * Update documentation
   * Changes in 2.0.2
     * New branch task
 
