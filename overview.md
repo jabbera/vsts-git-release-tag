@@ -12,10 +12,10 @@ You can control the name of the tag or branch by using the advanced settings. Yo
 
 For example:
 
-Release Name Format: Core Release-\$(Build.BuildNumber)-\$(rev:r)
-Release Name Instance Example: Release 3.0.17270.8-1
-Regex: Core Release-([0-9]+.[0-9]+.[0-9]+.[0-9]+)-[0-9]+
-Replacement Pattern: v$1
+> Release Name Format: Core Release-\$(Build.BuildNumber)-\$(rev:r)
+> Release Name Instance Example: Release 3.0.17270.8-1
+> Regex: Core Release-([0-9]+.[0-9]+.[0-9]+.[0-9]+)-[0-9]+
+> Replacement Pattern: v$1
 
 This would yield a tag or branch on the source artifacts of: v3.0.17270.8
 
