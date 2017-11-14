@@ -22,6 +22,7 @@
                 // The build id to get the repository id from. This won't be needed onece: https://github.com/Microsoft/vsts-agent/issues/976 is completed.
                 "RELEASE_ARTIFACTS_MASTER_BRANCH_BUILDID": "27",
                 // Regex Settings
+                "INPUT_staticTagName": "DEV1",
                 "INPUT_regexFlags": "",
                 "INPUT_searchRegex": "",
                 "INPUT_replacePattern": "",

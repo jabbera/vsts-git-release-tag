@@ -10,6 +10,7 @@ export abstract class GitRefCreator {
     readonly defaultSearchPattern: string = "\\s+";
     readonly defaultRegexFlags: string = "g";
     readonly defaultReplacePattern: string = "";
+    readonly defaultStaticTagName: string = "";
     readonly permissionTemplate: string = "You must grant the build account access to permission: ";
 
     protected abstract get refName(): string;
@@ -29,7 +30,7 @@ export abstract class GitRefCreator {
             let gitapi: git.IGitApi = connect.getGitApi();
             let bldapi: bld.IBuildApi = connect.getBuildApi();
 
-            let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi);
+            let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi, gitapi);
 
             if (artifactData.length === 0) {
                 tl.warning("No TfsGit artifacts found.");
@@ -44,17 +45,23 @@ export abstract class GitRefCreator {
     }
 
     protected generateRef(releaseName: string, prefix: string): string {
+        let staticTagName: string = this.getInputOrDefault("staticTagName", this.defaultStaticTagName);
         let searchRegex: string = this.getInputOrDefault("searchRegex", this.defaultSearchPattern);
         let regexFlags: string = this.getInputOrDefault("regexFlags", this.defaultRegexFlags);
         let replacePattern: string = this.getInputOrDefault("replacePattern", this.defaultReplacePattern);
 
-        tl.debug(`Search Regex: '${searchRegex}', Replace Pattern: '${replacePattern}', flags: '${regexFlags}'`);
+        tl.debug(`Search Regex: '${searchRegex}', Replace Pattern: '${replacePattern}', flags: '${regexFlags}', staticTagName: '${this.defaultStaticTagName}'`);
 
-        let regex: RegExp = new RegExp(searchRegex, regexFlags);
+        let refName: string = null;
+        if (staticTagName !== "") {
+            refName = staticTagName;
+        }
+        else {
+            let regex: RegExp = new RegExp(searchRegex, regexFlags);
+            refName = releaseName.replace(regex, replacePattern);
+        }
 
-        let refName: string = releaseName.replace(regex, replacePattern);
         refName = `${prefix}${refName}`;
-
         tl.debug(`RefName: '${refName}'`);
 
         return refName;
@@ -69,7 +76,7 @@ export abstract class GitRefCreator {
         return defaultValue;
     }
 
-    private async getAllGitArtifacts(bldapi: bld.IBuildApi): Promise < IArtifactData[] > {
+    private async getAllGitArtifacts(bldapi: bld.IBuildApi, gitapi: git.IGitApi): Promise < IArtifactData[] > {
         let artifactNames: IArtifactData[] = [];
         let regexp: RegExp = new RegExp("RELEASE\.ARTIFACTS\.(.*)\.REPOSITORY\.PROVIDER", "gi");
 
@@ -96,7 +103,10 @@ export abstract class GitRefCreator {
                 "name": name,
                 "commit": tl.getVariable(`RELEASE.ARTIFACTS.${name}.SOURCEVERSION`),
                 "repositoryId": repositoryId,
+                "oldCommitId": "0000000000000000000000000000000000000000",
             };
+
+            await this.populateExistingRefCommit(artifact, this.refName, gitapi);
 
             artifactNames.push(artifact);
         }
@@ -119,20 +129,20 @@ export abstract class GitRefCreator {
     }
 
     protected async processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
-
         tl.debug(`Processing artifact: '${artifact.name}' for ref: ${this.refName} new commit: ${artifact.commit}`);
 
-        let updateResult: giti.GitRefUpdateResult = await this.updateRef(artifact, this.refName, gitapi);
+        // See if there is a matching ref for the same commit. We won't overwrite an existing ref. Done after the update so all refs don't need to be brought back every time.
+        if (artifact.oldCommitId === artifact.commit) {
+            tl.debug("Found matching ref for commit.");
+            return true;
+        }
+
+        let localRefName: string = `refs/${this.refName}`;
+        let updateResult: giti.GitRefUpdateResult = await this.updateRef(artifact, localRefName, gitapi);
         if (updateResult.success) {
             tl.debug("Ref updated!");
             return;
         }
-
-        // See if there is a matching ref for the same commit. We won't overwrite an existing ref. Done after the update so all refs don't need to be brought back every time.
-        if (await this.doesRefExist(artifact, this.refName, gitapi)) {
-            return;
-        }
-
 
         switch (updateResult.updateStatus) {
             case giti.GitRefUpdateStatus.CreateBranchPermissionRequired:
@@ -147,31 +157,25 @@ export abstract class GitRefCreator {
 
         tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} UpdateStatus: ${updateResult.updateStatus} RepositoryId: ${updateResult.repositoryId} Commit: ${updateResult.newObjectId}`);
     }
-    private async doesRefExist(artifact: IArtifactData, refName: string, gitapi: git.IGitApi): Promise < boolean > {
-        let refs: giti.GitRef[] = await gitapi.getRefs(artifact.repositoryId);
+    private async populateExistingRefCommit(artifact: IArtifactData, refName: string, gitapi: git.IGitApi) {
+        let refs: giti.GitRef[] = await gitapi.getRefs(artifact.repositoryId, null, refName);
         if (refs == null) {
-            return false;
+            return;
         }
 
-        let foundRef: giti.GitRef = refs.find((x) => x.name === refName);
+        let foundRef: giti.GitRef = refs.find((x) => x.name.endsWith(refName));
         if (foundRef == null) {
-            return false;
+            return;
         }
 
-        if (foundRef.objectId === artifact.commit) {
-            tl.debug("Found matching ref for commit.");
-            return true;
-        }
-
-        tl.warning(`Ref exists, but on different commit. New commit: ${artifact.commit} Old Commit: ${foundRef.objectId}`);
-        return false;
+        artifact.oldCommitId = foundRef.objectId;
     }
     private async updateRef(artifact: IArtifactData, refName: string, gitapi: git.IGitApi): Promise < giti.GitRefUpdateResult > {
         let ref: giti.GitRefUpdate = {
             "isLocked": false,
             "name": refName,
             "newObjectId": artifact.commit,
-            "oldObjectId": "0000000000000000000000000000000000000000",
+            "oldObjectId": artifact.oldCommitId,
             "repositoryId": artifact.repositoryId,
         };
 
