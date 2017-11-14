@@ -8,7 +8,9 @@ Advanced Settings Documentation:
 
 Tagging and Branching
 
-You can control the name of the tag or branch by using the advanced settings. You can specify a regex that MUST match the release name while including one or more capture groups. ([Regex modifiers](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) are also settable via the RegEx flags setting). Using the replacement pattern you can reference the capture groups from the regex to build the desired string. 
+You can control the name of the tag or branch by using the advanced settings. The simpilest option is to set a static name: DEV, PRD, UAT etc.
+
+More complex you can specify a regex that MUST match the release name while including one or more capture groups. ([Regex modifiers](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) are also settable via the RegEx flags setting). Using the replacement pattern you can reference the capture groups from the regex to build the desired string. 
 
 For example:
 
@@ -23,6 +25,9 @@ Branching:
 
 The branch folder allows you to specify a subfolder to branch to. Adding to the example above. If the Branch Folder was set to: 'patch' the ref that would be created is: /refs/heads/patch/v3.0.17270.8
 
+  * Changes in 3.0.0
+    * Allow configuration of a static ref name
+    * Allow the updating of a ref
   * Changes in 2.0.5
     * Fix label for "Sample String"
     * Update documentation

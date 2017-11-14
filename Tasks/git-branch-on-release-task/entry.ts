@@ -6,7 +6,7 @@ class GitBranchCreator extends grc.GitRefCreator {
 
     constructor() {
         super();
-        let prefix: string = "refs/heads";
+        let prefix: string = "heads";
         let branchFolder: string = tl.getInput("branchFolder", false);
         if (branchFolder != null && branchFolder.length > 0) {
             if (branchFolder[0] !== "/") {

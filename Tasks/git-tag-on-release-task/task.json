@@ -30,6 +30,15 @@
             "groupName": "advanced"
         },
         {
+            "name": "staticTagName",
+            "type": "string",
+            "label": "Static Tag Name",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "An optional string representing the tag name: DEV, UAT, PRD for example.",
+            "groupName": "advanced"
+        },
+        {
             "name": "regexFlags",
             "type": "string",
             "label": "Regex Flags",
