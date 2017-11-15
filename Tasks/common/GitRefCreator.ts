@@ -129,7 +129,7 @@ export abstract class GitRefCreator {
     }
 
     protected async processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
-        tl.debug(`Processing artifact: '${artifact.name}' for ref: ${this.refName} new commit: ${artifact.commit}`);
+        tl.debug(`Processing artifact: '${artifact.name}' for ref: ${this.refName} new commit: ${artifact.commit} old commit ${artifact.oldCommitId}`);
 
         // See if there is a matching ref for the same commit. We won't overwrite an existing ref. Done after the update so all refs don't need to be brought back every time.
         if (artifact.oldCommitId === artifact.commit) {

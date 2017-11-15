@@ -25,8 +25,9 @@ Branching:
 
 The branch folder allows you to specify a subfolder to branch to. Adding to the example above. If the Branch Folder was set to: 'patch' the ref that would be created is: /refs/heads/patch/v3.0.17270.8
 
-  * Changes in 3.0.2
+  * Changes in 3.0.3
     * Require minimum agent version 2.105.7
+    * Print old commit id in log
   * Changes in 3.0.1
     * Allow configuration of a static ref name
     * Allow the updating of a ref
