@@ -13,17 +13,17 @@
   },
   "homepage": "https://github.com/jabbera/vsts-git-release-tag#readme",
   "devDependencies": {
-    "@types/node": "^7.0.18",
+    "@types/node": "^7.0.47",
     "gulp": "^3.9.1",
-    "gulp-sourcemaps": "^2.6.0",
-    "gulp-typescript": "^3.1.7",
-    "tfx-cli": "^0.4.5",
-    "tslint": "^5.2.0",
-    "typescript": "^2.3.4",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-typescript": "^3.2.3",
+    "tfx-cli": "^0.4.11",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1",
     "yargs": "^8.0.2"
   },
   "dependencies": {
-    "vso-node-api": "^6.2.4-preview",
-    "vsts-task-lib": "^2.0.5"
+    "vso-node-api": "^6.2.8-preview",
+    "vsts-task-lib": "^2.1.0"
   }
 }
