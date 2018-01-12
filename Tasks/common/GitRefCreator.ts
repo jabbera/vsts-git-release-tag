@@ -1,8 +1,8 @@
 import * as vsts from "vso-node-api";
 import * as bld from "vso-node-api/BuildApi";
 import * as git from "vso-node-api/GitApi";
-import * as bldi from "vso-node-api/Interfaces/BuildInterfaces";
-import * as giti from "vso-node-api/Interfaces/GitInterfaces";
+import * as bldi from "vso-node-api/interfaces/BuildInterfaces";
+import * as giti from "vso-node-api/interfaces/GitInterfaces";
 import * as tl from "vsts-task-lib/task";
 import IArtifactData from "./IArtifactData";
 
@@ -22,15 +22,15 @@ export abstract class GitRefCreator {
     public async run() {
         try {
 
-            let token: string = tl.getEndpointAuthorizationParameter("SystemVssConnection", "AccessToken", false);
-            let collectionUrl: string = tl.getEndpointUrl("SystemVssConnection", false).replace(".vsrm.visualstudio.com", ".visualstudio.com"); // need build
+            let token: string = tl.getEndpointAuthorizationParameter("SYSTEMVSSCONNECTION", "AccessToken", false);
+            let collectionUrl: string = tl.getEndpointUrl("SYSTEMVSSCONNECTION", false).replace(".vsrm.visualstudio.com", ".visualstudio.com"); // need build
             let authHandler = vsts.getPersonalAccessTokenHandler(token);
             let connect = new vsts.WebApi(collectionUrl, authHandler);
 
             let gitapi: git.IGitApi = connect.getGitApi();
             let bldapi: bld.IBuildApi = connect.getBuildApi();
 
-            let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi, gitapi);
+            let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi);
 
             if (artifactData.length === 0) {
                 tl.warning("No TfsGit artifacts found.");
@@ -76,7 +76,7 @@ export abstract class GitRefCreator {
         return defaultValue;
     }
 
-    private async getAllGitArtifacts(bldapi: bld.IBuildApi, gitapi: git.IGitApi): Promise < IArtifactData[] > {
+    private async getAllGitArtifacts(bldapi: bld.IBuildApi): Promise < IArtifactData[] > {
         let artifactNames: IArtifactData[] = [];
         let regexp: RegExp = new RegExp("RELEASE\.ARTIFACTS\.(.*)\.REPOSITORY\.PROVIDER", "gi");
 
@@ -106,8 +106,6 @@ export abstract class GitRefCreator {
                 "oldCommitId": "0000000000000000000000000000000000000000",
             };
 
-            await this.populateExistingRefCommit(artifact, this.refName, gitapi);
-
             artifactNames.push(artifact);
         }
 
@@ -130,6 +128,9 @@ export abstract class GitRefCreator {
 
     protected async processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
         tl.debug(`Processing artifact: '${artifact.name}' for ref: ${this.refName} new commit: ${artifact.commit} old commit ${artifact.oldCommitId}`);
+
+        // Do this here instead of during population to avoid : https://github.com/jabbera/vsts-git-release-tag/issues/20
+        await this.populateExistingRefCommit(artifact, this.refName, gitapi);
 
         // See if there is a matching ref for the same commit. We won't overwrite an existing ref. Done after the update so all refs don't need to be brought back every time.
         if (artifact.oldCommitId === artifact.commit) {
