@@ -30,7 +30,7 @@ export abstract class GitRefCreator {
             let gitapi: git.IGitApi = connect.getGitApi();
             let bldapi: bld.IBuildApi = connect.getBuildApi();
 
-            let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi);
+            let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi, gitapi);
 
             if (artifactData.length === 0) {
                 tl.warning("No TfsGit artifacts found.");
@@ -76,7 +76,7 @@ export abstract class GitRefCreator {
         return defaultValue;
     }
 
-    private async getAllGitArtifacts(bldapi: bld.IBuildApi): Promise < IArtifactData[] > {
+    private async getAllGitArtifacts(bldapi: bld.IBuildApi, gitapi: git.IGitApi): Promise < IArtifactData[] > {
         let artifactNames: IArtifactData[] = [];
         let regexp: RegExp = new RegExp("RELEASE\.ARTIFACTS\.(.*)\.REPOSITORY\.PROVIDER", "gi");
 
@@ -102,14 +102,80 @@ export abstract class GitRefCreator {
             let artifact: IArtifactData = {
                 "name": name,
                 "commit": tl.getVariable(`RELEASE.ARTIFACTS.${name}.SOURCEVERSION`),
-                "repositoryId": repositoryId,
+                "repositoryId": repositoryId.toLowerCase(),
                 "oldCommitId": "0000000000000000000000000000000000000000",
             };
 
             artifactNames.push(artifact);
         }
 
-        return artifactNames;
+        return await this.filterArtifacts(gitapi, artifactNames);
+    }
+
+    // This is meant to fix https://github.com/jabbera/vsts-git-release-tag/issues/23
+    // The user is using the same repo, but 2 different commits via 2 different artifacts.
+    // For a given repository we should select only the most current commit.
+    // My kingdom for a groupby
+    private async filterArtifacts(gitapi: git.IGitApi, artifacts: IArtifactData[]) {
+        if (artifacts.length <= 1) {
+            return artifacts;
+        }
+
+        artifacts.sort( (x, y) => {
+            if (x.repositoryId === y.repositoryId) return 0;
+            if (x.repositoryId < y.repositoryId) return -1;
+            // if (tuple[0] > tuple[1])
+            return 1;
+        });
+
+        let i: number;
+        for (i = 1; i < artifacts.length; i++) {
+            const prev: IArtifactData = artifacts[i - 1];
+            const current: IArtifactData = artifacts[i];
+
+            if (prev.repositoryId !== current.repositoryId) {
+                continue;
+            }
+
+            if (prev.commit === current.commit) {
+                continue;
+            }
+
+            let search = <giti.GitQueryCommitsCriteria> {
+                ids: [prev.commit, current.commit],
+            };
+
+            tl.debug(`Attempting to determine which commit was last. Prev: ${prev.commit} Current: ${current.commit} for repository: ${prev.repositoryId}`);
+
+            const commits: giti.GitCommitRef[] = await gitapi.getCommitsBatch(search, prev.repositoryId);
+            if (commits.length !== 2) {
+                tl.setResult(tl.TaskResult.Failed, `Cannot resolve difference most recent between two commits: ${prev.commit} ${current.commit}`);
+                return artifacts;
+            }
+
+            let firstCommitArtifactIndex: number;
+            let secondCommitArtifactIndex: number;
+
+            if (artifacts[i - 1].commit === commits[0].commitId.toLowerCase()) {
+                firstCommitArtifactIndex = i - 1;
+                secondCommitArtifactIndex = i;
+            } else {
+                firstCommitArtifactIndex = i;
+                secondCommitArtifactIndex = i - 1;
+            }
+
+            tl.debug(`Commit Info: { Id: ${commits[0].commitId} Date: ${commits[0].committer.date}} {Id: ${commits[1].commitId} Date: ${commits[1].committer.date}}`);
+
+            if (commits[0].committer.date < commits[1].committer.date) {
+                tl.debug(`Winning commit: ${commits[1].commitId}`);
+                artifacts[firstCommitArtifactIndex].commit = artifacts[secondCommitArtifactIndex].commit;
+            } else {
+                tl.debug(`Winning commit: ${commits[0].commitId}`);
+                artifacts[secondCommitArtifactIndex].commit = artifacts[firstCommitArtifactIndex].commit;
+            }
+        }
+
+        return artifacts;
     }
 
     private async getRepositoryId(bldapi: bld.IBuildApi, name: string): Promise < string > {
