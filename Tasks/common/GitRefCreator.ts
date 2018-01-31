@@ -94,7 +94,7 @@ export abstract class GitRefCreator {
 
             let name: string = match[1];
             tl.debug(`Getting repository id for artifact: ${name}`);
-            let repositoryId: string = await this.getRepositoryIdFromBuildNumber(bldapi, name); // This should really be available via a variable
+            let repositoryId: string = await this.getRepositoryId(bldapi, name); // This should really be available via a variable
             if (repositoryId == null) {
                 continue; // Error already logged
             }
@@ -112,6 +112,19 @@ export abstract class GitRefCreator {
         return artifactNames;
     }
 
+    private async getRepositoryId(bldapi: bld.IBuildApi, name: string): Promise < string > {
+        let repositoryidVariable: string = `RELEASE.ARTIFACTS.${name}.REPOSITORY_ID`;
+        let repositoryid: string = tl.getVariable(repositoryidVariable);
+
+        if (repositoryid === null || repositoryid === "") {
+            // This is a fallback to support TFS 2015
+            return await this.getRepositoryIdFromBuildNumber(bldapi, name);
+        }
+
+        tl.debug(`Got repositoryid from variable: ${repositoryid}`);
+        return repositoryid;
+    }
+
     private async getRepositoryIdFromBuildNumber(bldapi: bld.IBuildApi, name: string): Promise < string > {
         let buildidVariable: string = `RELEASE.ARTIFACTS.${name}.BUILDID`;
         let buildid: string = tl.getVariable(buildidVariable);
@@ -122,7 +135,7 @@ export abstract class GitRefCreator {
         }
 
         let build: bldi.Build = await bldapi.getBuild(Number(buildid));
-        tl.debug(`Got repositoryid: ${build.repository.id}`);
+        tl.debug(`Got repositoryid from build: ${build.repository.id}`);
         return build.repository.id;
     }
 
