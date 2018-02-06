@@ -64,6 +64,15 @@
             "required": false,
             "helpMarkDown": "The replacement patten corresponding to the regex above. Default is empty string",
             "groupName": "advanced"
+        },
+        {
+            "name": "artifactIncludeList",
+            "type": "multiLine",
+            "label": "Artifacts to include",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "An optional list of artifacts to include. If empty, use all. Newline delimited.",
+            "groupName": "advanced"
         }
     ],
     "execution": {

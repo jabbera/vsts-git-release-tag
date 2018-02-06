@@ -128,6 +128,8 @@ export abstract class GitRefCreator {
             return 1;
         });
 
+        artifacts = this.filterIncludedArtifacts(artifacts);
+
         let i: number;
         for (i = 1; i < artifacts.length; i++) {
             const prev: IArtifactData = artifacts[i - 1];
@@ -175,6 +177,25 @@ export abstract class GitRefCreator {
             }
         }
 
+        return artifacts;
+    }
+
+    private filterIncludedArtifacts(artifacts: IArtifactData[]): IArtifactData[] {
+        const includeMultiline: string[] = tl.getDelimitedInput("artifactIncludeList", "\r", false);
+        let includedArtifacts: Set<string>;
+
+        if (includeMultiline === null || includeMultiline.length === 0) {
+            tl.debug("inlcuding all artifacts");
+            includedArtifacts = new Set<string>(artifacts.map((x) => x.name));
+        }
+        else {
+            tl.debug("Filtering artifacts");
+            includedArtifacts = new Set<string>(includeMultiline);
+        }
+
+        tl.debug(`Before filter count: ${artifacts.length}`);
+        artifacts = artifacts.filter( (value) => includedArtifacts.has(value.name));
+        tl.debug(`After filter count ${artifacts.length}`);
         return artifacts;
     }
 
