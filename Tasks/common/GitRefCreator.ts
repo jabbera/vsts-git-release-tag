@@ -24,7 +24,7 @@ export abstract class GitRefCreator {
 
             let token: string = tl.getEndpointAuthorizationParameter("SYSTEMVSSCONNECTION", "AccessToken", false);
             let collectionUrl: string = tl.getEndpointUrl("SYSTEMVSSCONNECTION", false).replace(".vsrm.visualstudio.com", ".visualstudio.com"); // need build
-            let authHandler = vsts.getPersonalAccessTokenHandler(token);
+            let authHandler = token.length == 52 ? vsts.getPersonalAccessTokenHandler(token) : vsts.getBearerHandler(token);
             let connect = new vsts.WebApi(collectionUrl, authHandler);
 
             let gitapi: git.IGitApi = await connect.getGitApi();
