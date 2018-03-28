@@ -52,7 +52,7 @@ export abstract class GitRefCreator {
 
         tl.debug(`Search Regex: '${searchRegex}', Replace Pattern: '${replacePattern}', flags: '${regexFlags}', staticTagName: '${this.defaultStaticTagName}'`);
 
-        let refName: string = null;
+        let refName: string;
         if (staticTagName !== "") {
             refName = staticTagName;
         }
@@ -81,7 +81,7 @@ export abstract class GitRefCreator {
         let regexp: RegExp = new RegExp("RELEASE\.ARTIFACTS\.(.*)\.REPOSITORY\.PROVIDER", "gi");
 
         for (let variableInfo of tl.getVariables()) {
-            let match: RegExpExecArray = regexp.exec(variableInfo.name);
+            let match: RegExpExecArray | null = regexp.exec(variableInfo.name);
             if (match === null) {
                 tl.debug(`No match for variable: ${variableInfo.name}`);
                 continue;
@@ -94,7 +94,7 @@ export abstract class GitRefCreator {
 
             let name: string = match[1];
             tl.debug(`Getting repository id for artifact: ${name}`);
-            let repositoryId: string = await this.getRepositoryIdFromBuildNumber(bldapi, name); // This should really be available via a variable
+            let repositoryId: string | null = await this.getRepositoryIdFromBuildNumber(bldapi, name); // This should really be available via a variable
             if (repositoryId == null) {
                 continue; // Error already logged
             }
@@ -112,7 +112,7 @@ export abstract class GitRefCreator {
         return artifactNames;
     }
 
-    private async getRepositoryIdFromBuildNumber(bldapi: bld.IBuildApi, name: string): Promise < string > {
+    private async getRepositoryIdFromBuildNumber(bldapi: bld.IBuildApi, name: string): Promise < string | null > {
         let buildidVariable: string = `RELEASE.ARTIFACTS.${name}.BUILDID`;
         let buildid: string = tl.getVariable(buildidVariable);
 
@@ -127,10 +127,12 @@ export abstract class GitRefCreator {
     }
 
     protected async processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
-        tl.debug(`Processing artifact: '${artifact.name}' for ref: ${this.refName} new commit: ${artifact.commit} old commit ${artifact.oldCommitId}`);
+        tl.debug(`Processing artifact: '${artifact.name}' for ref: ${this.refName} new commit: ${artifact.commit}`);
 
         // Do this here instead of during population to avoid : https://github.com/jabbera/vsts-git-release-tag/issues/20
         await this.populateExistingRefCommit(artifact, this.refName, gitapi);
+
+        tl.debug(`Old commit ${artifact.oldCommitId}`);
 
         // See if there is a matching ref for the same commit. We won't overwrite an existing ref. Done after the update so all refs don't need to be brought back every time.
         if (artifact.oldCommitId === artifact.commit) {
@@ -139,7 +141,14 @@ export abstract class GitRefCreator {
         }
 
         let localRefName: string = `refs/${this.refName}`;
-        let updateResult: giti.GitRefUpdateResult = await this.updateRef(artifact, localRefName, gitapi);
+        tl.debug(`Updating ref: ''${localRefName}`);
+
+        let updateResult: giti.GitRefUpdateResult | null = await this.updateRef(artifact, localRefName, gitapi);
+        if (updateResult == null) {
+            // Error logged internally
+            return;
+        }
+
         if (updateResult.success) {
             tl.debug("Ref updated!");
             return;
@@ -159,19 +168,23 @@ export abstract class GitRefCreator {
         tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} UpdateStatus: ${updateResult.updateStatus} RepositoryId: ${updateResult.repositoryId} Old Commit: ${updateResult.oldObjectId} New Commit: ${updateResult.newObjectId}`);
     }
     private async populateExistingRefCommit(artifact: IArtifactData, refName: string, gitapi: git.IGitApi) {
-        let refs: giti.GitRef[] = await gitapi.getRefs(artifact.repositoryId, null, refName);
+
+        tl.debug(`Getting existing refs.`);
+        let refs: giti.GitRef[] = await gitapi.getRefs(artifact.repositoryId, undefined, refName);
         if (refs == null) {
+            tl.debug(`No refs returned.`);
             return;
         }
 
-        let foundRef: giti.GitRef = refs.find((x) => x.name.endsWith(refName));
+        tl.debug(`Got refs. Length = ${refs.length}`);
+        let foundRef: giti.GitRef | undefined = refs.find((x) => x.name.endsWith(refName));
         if (foundRef == null) {
             return;
         }
 
         artifact.oldCommitId = foundRef.objectId;
     }
-    private async updateRef(artifact: IArtifactData, refName: string, gitapi: git.IGitApi): Promise < giti.GitRefUpdateResult > {
+    private async updateRef(artifact: IArtifactData, refName: string, gitapi: git.IGitApi): Promise < giti.GitRefUpdateResult | null > {
         let ref: giti.GitRefUpdate = {
             "isLocked": false,
             "name": refName,
