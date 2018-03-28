@@ -27,8 +27,8 @@ export abstract class GitRefCreator {
             let authHandler = vsts.getPersonalAccessTokenHandler(token);
             let connect = new vsts.WebApi(collectionUrl, authHandler);
 
-            let gitapi: git.IGitApi = connect.getGitApi();
-            let bldapi: bld.IBuildApi = connect.getBuildApi();
+            let gitapi: git.IGitApi = await connect.getGitApi();
+            let bldapi: bld.IBuildApi = await connect.getBuildApi();
 
             let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi, gitapi);
 
