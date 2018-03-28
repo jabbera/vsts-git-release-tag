@@ -10,7 +10,8 @@
             "Tasks/common",
             "Tasks/git-branch-on-release-task",
             "Tasks/git-tag-on-release-task"
-        ]
+        ],
+        "strict": false
     },
     "include": [
         "Tasks/**/*.ts"
