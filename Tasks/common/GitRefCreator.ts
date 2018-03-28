@@ -127,10 +127,12 @@ export abstract class GitRefCreator {
     }
 
     protected async processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
-        tl.debug(`Processing artifact: '${artifact.name}' for ref: ${this.refName} new commit: ${artifact.commit} old commit ${artifact.oldCommitId}`);
+        tl.debug(`Processing artifact: '${artifact.name}' for ref: ${this.refName} new commit: ${artifact.commit}`);
 
         // Do this here instead of during population to avoid : https://github.com/jabbera/vsts-git-release-tag/issues/20
         await this.populateExistingRefCommit(artifact, this.refName, gitapi);
+
+        tl.debug(`Old commit ${artifact.oldCommitId}`);
 
         // See if there is a matching ref for the same commit. We won't overwrite an existing ref. Done after the update so all refs don't need to be brought back every time.
         if (artifact.oldCommitId === artifact.commit) {
@@ -139,6 +141,8 @@ export abstract class GitRefCreator {
         }
 
         let localRefName: string = `refs/${this.refName}`;
+        tl.debug(`Updating ref: ''${localRefName}`);
+
         let updateResult: giti.GitRefUpdateResult | null = await this.updateRef(artifact, localRefName, gitapi);
         if (updateResult == null) {
             // Error logged internally
@@ -164,11 +168,15 @@ export abstract class GitRefCreator {
         tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} UpdateStatus: ${updateResult.updateStatus} RepositoryId: ${updateResult.repositoryId} Old Commit: ${updateResult.oldObjectId} New Commit: ${updateResult.newObjectId}`);
     }
     private async populateExistingRefCommit(artifact: IArtifactData, refName: string, gitapi: git.IGitApi) {
+
+        tl.debug(`Getting existing refs.`);
         let refs: giti.GitRef[] = await gitapi.getRefs(artifact.repositoryId, undefined, refName);
         if (refs == null) {
+            tl.debug(`No refs returned.`);
             return;
         }
 
+        tl.debug(`Got refs. Length = ${refs.length}`);
         let foundRef: giti.GitRef | undefined = refs.find((x) => x.name.endsWith(refName));
         if (foundRef == null) {
             return;
