@@ -181,7 +181,7 @@ export abstract class GitRefCreator {
     }
 
     private filterIncludedArtifacts(artifacts: IArtifactData[]): IArtifactData[] {
-        const includeMultiline: string[] = tl.getDelimitedInput("artifactIncludeList", "\r", false);
+        const includeMultiline: string[] = tl.getDelimitedInput("artifactIncludeList", "\r", false).map(x => x.replace("\n", ""));
         let includedArtifacts: Set<string>;
 
         if (includeMultiline === null || includeMultiline.length === 0) {
