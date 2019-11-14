@@ -1,25 +1,48 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
-    "version": "0.1.0",
+    "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "build",
+            "label": "build",
             "command": "${workspaceRoot}\\node_modules\\.bin\\gulp",
-            "isShellCommand": true,
-            "isBuildCommand": true,
-            "args": ["watch"],
-            "showOutput": "silent",
+            "type": "shell",
+            "group": "build",
+            "args": [
+                "watch"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
             "isBackground": true,
             "problemMatcher": "$tsc"
         },
         {
-            "taskName": "package",
+            "label": "package",
             "command": "${workspaceRoot}\\node_modules\\.bin\\tfx",
-            "isShellCommand": true,
-            "args": ["extension ", "create", "--json", "--root", "${workspaceRoot}", "--manifest-globs", ""],
-            "showOutput": "always",
-            "echoCommand": true
+            "type": "shell",
+            "args": [
+                "extension ",
+                "create",
+                "--json",
+                "--root",
+                "${workspaceRoot}",
+                "--manifest-globs",
+                ""
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
         }
-    ]    
+    ]
 }
