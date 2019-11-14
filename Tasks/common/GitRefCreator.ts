@@ -1,9 +1,9 @@
-import * as vsts from "vso-node-api";
-import * as bld from "vso-node-api/BuildApi";
-import * as git from "vso-node-api/GitApi";
-import * as bldi from "vso-node-api/interfaces/BuildInterfaces";
-import * as giti from "vso-node-api/interfaces/GitInterfaces";
-import * as tl from "vsts-task-lib/task";
+import * as vsts from "azure-devops-node-api";
+import * as bld from "azure-devops-node-api/BuildApi";
+import * as git from "azure-devops-node-api/GitApi";
+import * as bldi from "azure-devops-node-api/interfaces/BuildInterfaces";
+import * as giti from "azure-devops-node-api/interfaces/GitInterfaces";
+import * as tl from "azure-pipelines-task-lib/task";
 import IArtifactData from "./IArtifactData";
 
 export abstract class GitRefCreator {
@@ -76,7 +76,7 @@ export abstract class GitRefCreator {
         return defaultValue;
     }
 
-    private async getAllGitArtifacts(bldapi: bld.IBuildApi, gitapi: git.IGitApi): Promise < IArtifactData[] > {
+    private async getAllGitArtifacts(bldapi: bld.IBuildApi, gitapi: git.IGitApi): Promise<IArtifactData[]> {
         let artifactNames: IArtifactData[] = [];
         let regexp: RegExp = new RegExp("RELEASE\.ARTIFACTS\.(.*)\.REPOSITORY\.PROVIDER", "gi");
 
@@ -121,7 +121,7 @@ export abstract class GitRefCreator {
             return artifacts;
         }
 
-        artifacts.sort( (x, y) => {
+        artifacts.sort((x, y) => {
             if (x.repositoryId === y.repositoryId) return 0;
             if (x.repositoryId < y.repositoryId) return -1;
             // if (tuple[0] > tuple[1])
@@ -143,7 +143,7 @@ export abstract class GitRefCreator {
                 continue;
             }
 
-            let search = <giti.GitQueryCommitsCriteria> {
+            let search = <giti.GitQueryCommitsCriteria>{
                 ids: [prev.commit, current.commit],
             };
 
@@ -194,12 +194,12 @@ export abstract class GitRefCreator {
         }
 
         tl.debug(`Before filter count: ${artifacts.length}`);
-        artifacts = artifacts.filter( (value) => includedArtifacts.has(value.name));
+        artifacts = artifacts.filter((value) => includedArtifacts.has(value.name));
         tl.debug(`After filter count ${artifacts.length}`);
         return artifacts;
     }
 
-    private async getRepositoryId(bldapi: bld.IBuildApi, name: string): Promise < string > {
+    private async getRepositoryId(bldapi: bld.IBuildApi, name: string): Promise<string> {
         let repositoryidVariable: string = `RELEASE.ARTIFACTS.${name}.REPOSITORY_ID`;
         let repositoryid: string = tl.getVariable(repositoryidVariable);
 
@@ -212,7 +212,7 @@ export abstract class GitRefCreator {
         return repositoryid;
     }
 
-    private async getRepositoryIdFromBuildNumber(bldapi: bld.IBuildApi, name: string): Promise < string > {
+    private async getRepositoryIdFromBuildNumber(bldapi: bld.IBuildApi, name: string): Promise<string> {
         let buildidVariable: string = `RELEASE.ARTIFACTS.${name}.BUILDID`;
         let buildid: string = tl.getVariable(buildidVariable);
 
@@ -279,7 +279,7 @@ export abstract class GitRefCreator {
 
         artifact.oldCommitId = foundRef.objectId;
     }
-    private async updateRef(artifact: IArtifactData, refName: string, gitapi: git.IGitApi): Promise < giti.GitRefUpdateResult > {
+    private async updateRef(artifact: IArtifactData, refName: string, gitapi: git.IGitApi): Promise<giti.GitRefUpdateResult> {
         let ref: giti.GitRefUpdate = {
             "isLocked": false,
             "name": refName,
