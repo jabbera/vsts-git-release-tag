@@ -20,12 +20,14 @@ class GitBranchCreator extends grc.GitRefCreator {
         }
 
         this.refName = this.generateRef(tl.getVariable("RELEASE_RELEASENAME"), prefix);
+        if (this.refName == null) {
+            this.refName = this.generateRef(tl.getVariable('build.buildNumber'), prefix);
+        }
     }
 }
 
 async function run() {
     let creator: GitBranchCreator = new GitBranchCreator();
-    console.log("You must grant your build account the CreateBranch permission");
     await creator.run();
 }
 

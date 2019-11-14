@@ -45,6 +45,10 @@ export abstract class GitRefCreator {
     }
 
     protected generateRef(releaseName: string, prefix: string): string {
+        if (releaseName == null || releaseName == undefined || releaseName == '') {
+            return null;
+        }
+
         let staticTagName: string = this.getInputOrDefault("staticTagName", this.defaultStaticTagName);
         let searchRegex: string = this.getInputOrDefault("searchRegex", this.defaultSearchPattern);
         let regexFlags: string = this.getInputOrDefault("regexFlags", this.defaultRegexFlags);
@@ -107,6 +111,19 @@ export abstract class GitRefCreator {
             };
 
             artifactNames.push(artifact);
+        }
+
+        // Fallback to build information
+        if (artifactNames.length === 0) {
+            let buildProvider: string = tl.getVariable("build.repository.provider");
+            if (buildProvider === "TfsGit") {
+                artifactNames.push({
+                    "name": tl.getVariable("build.repository.name"),
+                    "commit": tl.getVariable("build.sourceVersion"),
+                    "repositoryId": tl.getVariable("build.repository.id"),
+                    "oldCommitId": "0000000000000000000000000000000000000000",
+                });
+            }
         }
 
         return await this.filterArtifacts(gitapi, artifactNames);
