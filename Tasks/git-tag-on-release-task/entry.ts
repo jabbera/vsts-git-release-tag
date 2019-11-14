@@ -7,6 +7,9 @@ class GitTagCreator extends grc.GitRefCreator {
     constructor() {
         super();
         this.refName = this.generateRef(tl.getVariable("RELEASE_RELEASENAME"), "tags/");
+        if (this.refName == null) {
+            this.refName = this.generateRef(tl.getVariable('build.buildNumber'), "tags/");
+        }
     }
 }
 

@@ -10,32 +10,28 @@
             "name": "Launch branch task",
             "program": "${workspaceRoot}\\Tasks\\git-branch-on-release-task\\entry.js",
             "cwd": "${workspaceRoot}\\Tasks\\git-branch-on-release-task",
-            "outFiles": ["${workspaceRoot}\\Tasks\\git-branch-on-release-task\\*.js"],
+            "outFiles": [
+                "${workspaceRoot}\\Tasks\\git-branch-on-release-task\\*.js"
+            ],
             "sourceMaps": true,
             "env": {
                 // This is the tag to be created
-                "RELEASE_RELEASENAME": "Release - 1.0.20",
-                
+                "build_buildNumber": "Release - 1.0.20",
                 "RELEASE_ARTIFACTS_SCRUMM-SAMPLE-BUILD1_REPOSITORY_PROVIDER": "TfsGit",
                 "RELEASE_ARTIFACTS_SCRUMM-SAMPLE-BUILD1_SOURCEVERSION": "88c2da89b3aab9b33a2c205e5cf31f22d79b0a1a",
                 "RELEASE_ARTIFACTS_SCRUMM-SAMPLE-BUILD1_REPOSITORY_ID": "4c9a5185-5d8f-4d36-935a-da19e0c4f97b",
-
                 "RELEASE_ARTIFACTS_SCRUMM-SAMPLE-BUILD_REPOSITORY_PROVIDER": "TfsGit",
                 "RELEASE_ARTIFACTS_SCRUMM-SAMPLE-BUILD_SOURCEVERSION": "1dea04b2c6a3524b53a1904c20af77b3418694cb",
                 "RELEASE_ARTIFACTS_SCRUMM-SAMPLE-BUILD_REPOSITORY_ID": "4c9a5185-5d8f-4d36-935a-da19e0c4f97b",
-
                 // Regex Settings
                 "INPUT_staticTagName": "DEV1",
                 "INPUT_regexFlags": "",
                 "INPUT_searchRegex": "",
                 "INPUT_replacePattern": "",
                 "INPUT_branchFolder": "",
-
-
                 // Set these as an environment variables
                 //"ENDPOINT_AUTH_PARAMETER_SystemVssConnection_AccessToken": "<Your token>",
                 //"ENDPOINT_URL_SystemVssConnection": "https://<your account>.vsrm.visualstudio.com/",
-
                 "VSTS_PUBLIC_VARIABLES": "[\"RELEASE.ARTIFACTS.SCRUMM-SAMPLE-BUILD1.REPOSITORY.PROVIDER\", \"RELEASE.ARTIFACTS.SCRUMM-SAMPLE-BUILD1.SOURCEVERSION\", \"RELEASE.ARTIFACTS.SCRUMM-SAMPLE-BUILD1.REPOSITORY.ID\", \"RELEASE.ARTIFACTS.SCRUMM-SAMPLE-BUILD.REPOSITORY.PROVIDER\", \"RELEASE.ARTIFACTS.SCRUMM-SAMPLE-BUILD.SOURCEVERSION\", \"RELEASE.ARTIFACTS.SCRUMM-SAMPLE-BUILD.REPOSITORY.ID\",\"RELEASE.RELEASENAME\"]"
             }
         }
