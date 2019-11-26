@@ -91,7 +91,7 @@ export abstract class GitRefCreator {
                 continue;
             }
 
-            if (variableInfo.value !== "TfsGit") {
+            if (variableInfo.value !== "TfsGit" && variableInfo.value !== "Git") {
                 tl.debug(`Matching variable:  ${variableInfo.name}, but artifact type: ${variableInfo.value}`);
                 continue;
             }
@@ -116,7 +116,7 @@ export abstract class GitRefCreator {
         // Fallback to build information
         if (artifactNames.length === 0) {
             let buildProvider: string = tl.getVariable("build.repository.provider");
-            if (buildProvider === "TfsGit") {
+            if (buildProvider === "TfsGit" || buildProvider === "Git") {
                 artifactNames.push({
                     "name": tl.getVariable("build.repository.name"),
                     "commit": tl.getVariable("build.sourceVersion"),
@@ -220,27 +220,44 @@ export abstract class GitRefCreator {
         let repositoryidVariable: string = `RELEASE.ARTIFACTS.${name}.REPOSITORY_ID`;
         let repositoryid: string = tl.getVariable(repositoryidVariable);
 
-        if (repositoryid === null || repositoryid === "") {
-            // This is a fallback to support TFS 2015
-            return await this.getRepositoryIdFromBuildNumber(bldapi, name);
+        if (repositoryid !== null && repositoryid !== "") {
+            tl.debug(`Got repositoryid from variable: ${repositoryid}`);
+            return repositoryid;
         }
 
-        tl.debug(`Got repositoryid from variable: ${repositoryid}`);
-        return repositoryid;
+        // YAML
+        repositoryidVariable = `release.artifacts.${name}.repository.id`;
+        repositoryid = tl.getVariable(repositoryidVariable);
+        if (repositoryid !== null && repositoryid !== "") {
+            tl.debug(`Got repositoryid from YAML variable: ${repositoryid}`);
+            return repositoryid;
+        }
+
+        // This is a fallback to support TFS 2015
+        return await this.getRepositoryIdFromBuildNumber(bldapi, name);
     }
 
     private async getRepositoryIdFromBuildNumber(bldapi: bld.IBuildApi, name: string): Promise<string> {
         let buildidVariable: string = `RELEASE.ARTIFACTS.${name}.BUILDID`;
         let buildid: string = tl.getVariable(buildidVariable);
 
-        if (buildid === null || buildid === "") {
-            tl.setResult(tl.TaskResult.Failed, `Unable to get build id from variable: ${buildidVariable}`);
-            return null;
+        if (buildid !== null && buildid !== "") {
+            let build: bldi.Build = await bldapi.getBuild(Number(buildid));
+            tl.debug(`Got repositoryid from build: ${build.repository.id}`);
+            return build.repository.id;
         }
 
-        let build: bldi.Build = await bldapi.getBuild(Number(buildid));
-        tl.debug(`Got repositoryid from build: ${build.repository.id}`);
-        return build.repository.id;
+        buildidVariable = `release.artifacts.${name}.buildId`;
+        buildid = tl.getVariable(buildidVariable);
+
+        if (buildid !== null && buildid !== "") {
+            let build: bldi.Build = await bldapi.getBuild(Number(buildid));
+            tl.debug(`Got repositoryid from YAML build: ${build.repository.id}`);
+            return build.repository.id;
+        }
+
+        tl.setResult(tl.TaskResult.Failed, `Unable to get build id from variable: ${buildidVariable}`);
+        return null;
     }
 
     protected async processArtifact(artifact: IArtifactData, gitapi: git.IGitApi) {
