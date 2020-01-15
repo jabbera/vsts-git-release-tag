@@ -82,13 +82,17 @@ export abstract class GitRefCreator {
 
     private async getAllGitArtifacts(bldapi: bld.IBuildApi, gitapi: git.IGitApi): Promise<IArtifactData[]> {
         let artifactNames: IArtifactData[] = [];
-        let regexp: RegExp = new RegExp("RELEASE\.ARTIFACTS\.(.*)\.REPOSITORY\.PROVIDER", "gi");
+        const releaseRegexp: RegExp = new RegExp("RELEASE\.ARTIFACTS\.(.*)\.REPOSITORY\.PROVIDER", "gi");
+        const yamlRegexp: RegExp = new RegExp("resources\.pipeline\.(.*)\.sourceProvider", "gi");
 
         for (let variableInfo of tl.getVariables()) {
-            let match: RegExpExecArray = regexp.exec(variableInfo.name);
+            let match: RegExpExecArray = releaseRegexp.exec(variableInfo.name);
             if (match === null) {
-                tl.debug(`No match for variable: ${variableInfo.name}`);
-                continue;
+                match = yamlRegexp.exec(variableInfo.name);
+                if (match === null) {
+                    tl.debug(`No match for variable: ${variableInfo.name}`);
+                    continue;
+                }
             }
 
             if (variableInfo.value !== "TfsGit" && variableInfo.value !== "Git") {
@@ -105,7 +109,7 @@ export abstract class GitRefCreator {
 
             let artifact: IArtifactData = {
                 "name": name,
-                "commit": tl.getVariable(`RELEASE.ARTIFACTS.${name}.SOURCEVERSION`),
+                "commit": tl.getVariable(`RELEASE.ARTIFACTS.${name}.SOURCEVERSION`) ?? tl.getVariable(`resources.pipeline.${name}.sourceCommit`),
                 "repositoryId": repositoryId.toLowerCase(),
                 "oldCommitId": "0000000000000000000000000000000000000000",
             };
@@ -220,7 +224,7 @@ export abstract class GitRefCreator {
         let repositoryidVariable: string = `RELEASE.ARTIFACTS.${name}.REPOSITORY_ID`;
         let repositoryid: string = tl.getVariable(repositoryidVariable);
 
-        if (repositoryid !== null && repositoryid !== "") {
+        if (repositoryid) {
             tl.debug(`Got repositoryid from variable: ${repositoryid}`);
             return repositoryid;
         }
@@ -228,12 +232,12 @@ export abstract class GitRefCreator {
         // YAML
         repositoryidVariable = `release.artifacts.${name}.repository.id`;
         repositoryid = tl.getVariable(repositoryidVariable);
-        if (repositoryid !== null && repositoryid !== "") {
+        if (repositoryid) {
             tl.debug(`Got repositoryid from YAML variable: ${repositoryid}`);
             return repositoryid;
         }
 
-        // This is a fallback to support TFS 2015
+        // This is a fallback to support TFS 2015 and YAML resources
         return await this.getRepositoryIdFromBuildNumber(bldapi, name);
     }
 
@@ -241,7 +245,7 @@ export abstract class GitRefCreator {
         let buildidVariable: string = `RELEASE.ARTIFACTS.${name}.BUILDID`;
         let buildid: string = tl.getVariable(buildidVariable);
 
-        if (buildid !== null && buildid !== "") {
+        if (buildid) {
             let build: bldi.Build = await bldapi.getBuild(Number(buildid));
             tl.debug(`Got repositoryid from build: ${build.repository.id}`);
             return build.repository.id;
@@ -250,10 +254,24 @@ export abstract class GitRefCreator {
         buildidVariable = `release.artifacts.${name}.buildId`;
         buildid = tl.getVariable(buildidVariable);
 
-        if (buildid !== null && buildid !== "") {
+        if (buildid) {
             let build: bldi.Build = await bldapi.getBuild(Number(buildid));
             tl.debug(`Got repositoryid from YAML build: ${build.repository.id}`);
             return build.repository.id;
+        }
+
+        // YAML pipeline resources - https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema#pipeline-resource
+        buildidVariable = `resources.pipeline.${name}.runId`;
+        buildid = tl.getVariable(buildidVariable);
+        if (buildid) {
+            let build: bldi.Build = await bldapi.getBuild(Number(buildid));
+            if (build) {
+                tl.debug(`Got repositoryid from YAML pipeline resource: ${build.repository.id}`);
+                return build.repository.id;
+            }
+            else {
+                tl.debug(`Pipeline ID '${buildid}' not found or not accessible with current authorization level (${this.permissionTemplate}View builds)`);
+            }
         }
 
         tl.setResult(tl.TaskResult.Failed, `Unable to get build id from variable: ${buildidVariable}`);
