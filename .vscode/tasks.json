@@ -27,13 +27,12 @@
             "command": "${workspaceRoot}\\node_modules\\.bin\\tfx",
             "type": "shell",
             "args": [
-                "extension ",
+                "extension",
                 "create",
                 "--json",
                 "--root",
                 "${workspaceRoot}",
-                "--manifest-globs",
-                ""
+                "--manifest-globs"
             ],
             "presentation": {
                 "echo": true,
