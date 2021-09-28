@@ -302,6 +302,9 @@ export abstract class GitRefCreator {
         }
 
         switch (updateResult.updateStatus) {
+            case giti.GitRefUpdateStatus.ForcePushRequired:
+                tl.error(`${this.permissionTemplate}Force push`);
+                break;
             case giti.GitRefUpdateStatus.CreateBranchPermissionRequired:
                 tl.error(`${this.permissionTemplate}Create Branch`);
                 break;
