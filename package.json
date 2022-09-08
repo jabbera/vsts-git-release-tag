@@ -17,7 +17,7 @@
     "gulp": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
-    "tfx-cli": "^0.7.11",
+    "tfx-cli": "^0.12.0",
     "tslint": "^5.20.1",
     "typescript": "^3.7.2",
     "yargs": "^14.2.0"
