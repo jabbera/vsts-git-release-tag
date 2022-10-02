@@ -204,7 +204,7 @@ export abstract class GitRefCreator {
         let includedArtifacts: Set<string>;
 
         if (includeMultiline === null || includeMultiline.length === 0) {
-            tl.debug("inlcuding all artifacts");
+            tl.debug("Including all artifacts");
             includedArtifacts = new Set<string>(artifacts.map((x) => x.name));
         } else {
             tl.debug("Filtering artifacts");
