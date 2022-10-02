@@ -313,6 +313,7 @@ export abstract class GitRefCreator {
 
         tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} UpdateStatus: ${updateResult.updateStatus} RepositoryId: ${updateResult.repositoryId} Old Commit: ${updateResult.oldObjectId} New Commit: ${updateResult.newObjectId}`);
     }
+
     private async populateExistingRefCommit(artifact: IArtifactData, refName: string, gitapi: git.IGitApi) {
         tl.debug(`Getting refs for: '${refName}' with repositoryId: '${artifact.repositoryId}'`);
 
@@ -330,6 +331,7 @@ export abstract class GitRefCreator {
 
         artifact.oldCommitId = foundRef.objectId;
     }
+
     private async updateRef(artifact: IArtifactData, refName: string, gitapi: git.IGitApi): Promise<giti.GitRefUpdateResult> {
         let ref: giti.GitRefUpdate = {
             "isLocked": false,
