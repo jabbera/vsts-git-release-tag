@@ -10,7 +10,7 @@ Tagging and Branching
 
 You can control the name of the tag or branch by using the advanced settings. The simpilest option is to set a static name: DEV, PRD, UAT etc.
 
-More complex you can specify a regex that MUST match the release name while including one or more capture groups. ([Regex modifiers](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) are also settable via the RegEx flags setting). Using the replacement pattern you can reference the capture groups from the regex to build the desired string. 
+More complex you can specify a regex that MUST match the release name while including one or more capture groups. ([Regex modifiers](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) are also settable via the RegEx flags setting). Using the replacement pattern you can reference the capture groups from the regex to build the desired string.
 
 For example:
 
