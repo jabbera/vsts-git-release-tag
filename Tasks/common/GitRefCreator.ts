@@ -32,7 +32,7 @@ export abstract class GitRefCreator {
 
             let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi, gitapi);
 
-            if (artifactData.length === 0) {
+            if (!artifactData || artifactData.length === 0) {
                 tl.warning("No TfsGit artifacts found.");
             }
 
@@ -327,8 +327,8 @@ export abstract class GitRefCreator {
         tl.debug(`Getting refs for: '${refName}' with repositoryId: '${artifact.repositoryId}'`);
 
         let refs: giti.GitRef[] = await gitapi.getRefs(artifact.repositoryId, null, refName);
-        if (refs == null) {
-            tl.debug(`No refs returned`);
+        if (refs == null || Object.keys(refs).length === 0) {
+            tl.warning(`No refs returned for '${refName}'`);
             return;
         }
 
@@ -352,7 +352,7 @@ export abstract class GitRefCreator {
         let refArray: giti.GitRefUpdate[] = [ref];
         let updateRefsResult: giti.GitRefUpdateResult[] = await gitapi.updateRefs(refArray, artifact.repositoryId);
         if (updateRefsResult == null || updateRefsResult.length === 0) {
-            tl.warning(`No update result returned from updateRefs`);
+            tl.warning(`No update result returned from updateRefs for '${refName}'`);
             return null;
         }
 
