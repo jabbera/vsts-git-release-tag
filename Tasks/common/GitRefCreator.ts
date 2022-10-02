@@ -96,7 +96,7 @@ export abstract class GitRefCreator {
             }
 
             if (variableInfo.value !== "TfsGit" && variableInfo.value !== "Git") {
-                tl.debug(`Matching variable:  ${variableInfo.name}, but artifact type: ${variableInfo.value}`);
+                tl.debug(`Matching variable: ${variableInfo.name}, but artifact type: ${variableInfo.value}`);
                 continue;
             }
 
@@ -225,7 +225,7 @@ export abstract class GitRefCreator {
         let repositoryid: string = tl.getVariable(repositoryidVariable);
 
         if (repositoryid) {
-            tl.debug(`Got repositoryid from variable: ${repositoryid}`);
+            tl.debug(`Got repositoryid from variable (${repositoryidVariable}): ${repositoryid}`);
             return repositoryid;
         }
 
@@ -233,7 +233,7 @@ export abstract class GitRefCreator {
         repositoryidVariable = `release.artifacts.${name}.repository.id`;
         repositoryid = tl.getVariable(repositoryidVariable);
         if (repositoryid) {
-            tl.debug(`Got repositoryid from YAML variable: ${repositoryid}`);
+            tl.debug(`Got repositoryid from YAML variable (${repositoryidVariable}): ${repositoryid}`);
             return repositoryid;
         }
 
@@ -247,7 +247,7 @@ export abstract class GitRefCreator {
 
         if (buildid) {
             let build: bldi.Build = await bldapi.getBuild(Number(buildid));
-            tl.debug(`Got repositoryid from build: ${build.repository.id}`);
+            tl.debug(`Got repositoryid from build (${buildidVariable}): ${build.repository.id}`);
             return build.repository.id;
         }
 
@@ -256,7 +256,7 @@ export abstract class GitRefCreator {
 
         if (buildid) {
             let build: bldi.Build = await bldapi.getBuild(Number(buildid));
-            tl.debug(`Got repositoryid from YAML build: ${build.repository.id}`);
+            tl.debug(`Got repositoryid from YAML build (${buildidVariable}): ${build.repository.id}`);
             return build.repository.id;
         }
 
@@ -266,7 +266,7 @@ export abstract class GitRefCreator {
         if (buildid) {
             let build: bldi.Build = await bldapi.getBuild(Number(buildid));
             if (build) {
-                tl.debug(`Got repositoryid from YAML pipeline resource: ${build.repository.id}`);
+                tl.debug(`Got repositoryid from YAML pipeline resource (${buildidVariable}): ${build.repository.id}`);
                 return build.repository.id;
             }
             else {
