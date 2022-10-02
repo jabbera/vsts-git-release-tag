@@ -317,11 +317,14 @@ export abstract class GitRefCreator {
             case giti.GitRefUpdateStatus.CreateTagPermissionRequired:
                 tl.error(`${this.permissionTemplate}Create Tag`);
                 break;
+            default:
+                tl.error(`Unknown UpdateStatus: ${updateResult.updateStatus} (${giti.GitRefUpdateStatus[updateResult.updateStatus]})`);
+                break;
         }
 
         tl.error(`If you need to change permissions see: _admin/_versioncontrol?_a=security&repositoryId=${artifact.repositoryId}`);
 
-        tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} UpdateStatus: ${updateResult.updateStatus} RepositoryId: ${updateResult.repositoryId} Old Commit: ${updateResult.oldObjectId} New Commit: ${updateResult.newObjectId}`);
+        tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} UpdateStatus: ${updateResult.updateStatus} (${giti.GitRefUpdateStatus[updateResult.updateStatus]}) RepositoryId: ${updateResult.repositoryId} Old Commit: ${updateResult.oldObjectId} New Commit: ${updateResult.newObjectId}`);
     }
     private async populateExistingRefCommit(artifact: IArtifactData, refName: string, gitapi: git.IGitApi) {
         tl.debug(`Getting refs for: '${refName}' with repositoryId: '${artifact.repositoryId}'`);
