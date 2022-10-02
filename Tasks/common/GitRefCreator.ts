@@ -171,7 +171,7 @@ export abstract class GitRefCreator {
             tl.debug(`Attempting to determine which commit was last. Prev: ${prev.commit} Current: ${current.commit} for repository: ${prev.repositoryId}`);
 
             const commits: giti.GitCommitRef[] = await gitapi.getCommitsBatch(search, prev.repositoryId);
-            if (commits.length !== 2) {
+            if (!commits || commits.length !== 2) {
                 tl.setResult(tl.TaskResult.Failed, `Cannot resolve difference most recent between two commits: ${prev.commit} ${current.commit}`);
                 return artifacts;
             }
@@ -296,6 +296,12 @@ export abstract class GitRefCreator {
         tl.debug(`Updating ref: ${localRefName}`);
 
         let updateResult: giti.GitRefUpdateResult = await this.updateRef(artifact, localRefName, gitapi);
+
+        if (updateResult === null) {
+            tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} RepositoryId: ${artifact.repositoryId} Old Commit: ${artifact.oldCommitId} New Commit: ${artifact.commit}`);
+            return;
+        }
+
         if (updateResult.success) {
             tl.debug("Ref updated!");
             return;
