@@ -21,7 +21,6 @@ export abstract class GitRefCreator {
 
     public async run() {
         try {
-
             let token: string = tl.getEndpointAuthorizationParameter("SYSTEMVSSCONNECTION", "AccessToken", false);
             let collectionUrl: string = tl.getEndpointUrl("SYSTEMVSSCONNECTION", false).replace(".vsrm.visualstudio.com", ".visualstudio.com"); // need build
             let authHandler = token.length === 52 ? vsts.getPersonalAccessTokenHandler(token) : vsts.getBearerHandler(token);
@@ -59,8 +58,7 @@ export abstract class GitRefCreator {
         let refName: string = null;
         if (staticTagName !== "") {
             refName = staticTagName;
-        }
-        else {
+        } else {
             let regex: RegExp = new RegExp(searchRegex, regexFlags);
             refName = releaseName.replace(regex, replacePattern);
         }
@@ -101,7 +99,7 @@ export abstract class GitRefCreator {
             }
 
             let name: string = match[1];
-            tl.debug(`Getting repository id for artifact: ${name}`);
+            tl.debug(`Getting repository ID for artifact: ${name}`);
             let repositoryId: string = await this.getRepositoryId(bldapi, name); // This should really be available via a variable
             if (repositoryId == null) {
                 continue; // Error already logged
@@ -208,8 +206,7 @@ export abstract class GitRefCreator {
         if (includeMultiline === null || includeMultiline.length === 0) {
             tl.debug("inlcuding all artifacts");
             includedArtifacts = new Set<string>(artifacts.map((x) => x.name));
-        }
-        else {
+        } else {
             tl.debug("Filtering artifacts");
             includedArtifacts = new Set<string>(includeMultiline);
         }
@@ -268,13 +265,12 @@ export abstract class GitRefCreator {
             if (build) {
                 tl.debug(`Got repositoryid from YAML pipeline resource: ${build.repository.id}`);
                 return build.repository.id;
-            }
-            else {
+            } else {
                 tl.debug(`Pipeline ID '${buildid}' not found or not accessible with current authorization level (${this.permissionTemplate}View builds)`);
             }
         }
 
-        tl.setResult(tl.TaskResult.Failed, `Unable to get build id from variable: ${buildidVariable}`);
+        tl.setResult(tl.TaskResult.Failed, `Unable to get build ID from variable: ${buildidVariable}`);
         return null;
     }
 
