@@ -331,7 +331,7 @@ export abstract class GitRefCreator {
 
         let refs: giti.GitRef[] = await gitapi.getRefs(artifact.repositoryId, null, refName);
         if (refs == null || Object.keys(refs).length === 0) {
-            tl.warning(`No refs returned for '${refName}'`);
+            tl.debug(`No refs returned for '${refName}'`);
             return;
         }
 
