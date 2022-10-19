@@ -32,7 +32,7 @@ export abstract class GitRefCreator {
 
             let artifactData: IArtifactData[] = await this.getAllGitArtifacts(bldapi, gitapi);
 
-            if (artifactData.length === 0) {
+            if (!artifactData || artifactData.length === 0) {
                 tl.warning("No TfsGit artifacts found.");
             }
 
@@ -96,7 +96,7 @@ export abstract class GitRefCreator {
             }
 
             if (variableInfo.value !== "TfsGit" && variableInfo.value !== "Git") {
-                tl.debug(`Matching variable:  ${variableInfo.name}, but artifact type: ${variableInfo.value}`);
+                tl.debug(`Matching variable: ${variableInfo.name}, but artifact type: ${variableInfo.value}`);
                 continue;
             }
 
@@ -171,7 +171,7 @@ export abstract class GitRefCreator {
             tl.debug(`Attempting to determine which commit was last. Prev: ${prev.commit} Current: ${current.commit} for repository: ${prev.repositoryId}`);
 
             const commits: giti.GitCommitRef[] = await gitapi.getCommitsBatch(search, prev.repositoryId);
-            if (commits.length !== 2) {
+            if (!commits || commits.length !== 2) {
                 tl.setResult(tl.TaskResult.Failed, `Cannot resolve difference most recent between two commits: ${prev.commit} ${current.commit}`);
                 return artifacts;
             }
@@ -225,7 +225,7 @@ export abstract class GitRefCreator {
         let repositoryid: string = tl.getVariable(repositoryidVariable);
 
         if (repositoryid) {
-            tl.debug(`Got repositoryid from variable: ${repositoryid}`);
+            tl.debug(`Got repositoryid from variable (${repositoryidVariable}): ${repositoryid}`);
             return repositoryid;
         }
 
@@ -233,7 +233,7 @@ export abstract class GitRefCreator {
         repositoryidVariable = `release.artifacts.${name}.repository.id`;
         repositoryid = tl.getVariable(repositoryidVariable);
         if (repositoryid) {
-            tl.debug(`Got repositoryid from YAML variable: ${repositoryid}`);
+            tl.debug(`Got repositoryid from YAML variable (${repositoryidVariable}): ${repositoryid}`);
             return repositoryid;
         }
 
@@ -247,7 +247,7 @@ export abstract class GitRefCreator {
 
         if (buildid) {
             let build: bldi.Build = await bldapi.getBuild(Number(buildid));
-            tl.debug(`Got repositoryid from build: ${build.repository.id}`);
+            tl.debug(`Got repositoryid from build (${buildidVariable}): ${build.repository.id}`);
             return build.repository.id;
         }
 
@@ -256,7 +256,7 @@ export abstract class GitRefCreator {
 
         if (buildid) {
             let build: bldi.Build = await bldapi.getBuild(Number(buildid));
-            tl.debug(`Got repositoryid from YAML build: ${build.repository.id}`);
+            tl.debug(`Got repositoryid from YAML build (${buildidVariable}): ${build.repository.id}`);
             return build.repository.id;
         }
 
@@ -266,7 +266,7 @@ export abstract class GitRefCreator {
         if (buildid) {
             let build: bldi.Build = await bldapi.getBuild(Number(buildid));
             if (build) {
-                tl.debug(`Got repositoryid from YAML pipeline resource: ${build.repository.id}`);
+                tl.debug(`Got repositoryid from YAML pipeline resource (${buildidVariable}): ${build.repository.id}`);
                 return build.repository.id;
             }
             else {
@@ -296,6 +296,12 @@ export abstract class GitRefCreator {
         tl.debug(`Updating ref: ${localRefName}`);
 
         let updateResult: giti.GitRefUpdateResult = await this.updateRef(artifact, localRefName, gitapi);
+
+        if (updateResult === null) {
+            tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} RepositoryId: ${artifact.repositoryId} Old Commit: ${artifact.oldCommitId} New Commit: ${artifact.commit}`);
+            return;
+        }
+
         if (updateResult.success) {
             tl.debug("Ref updated!");
             return;
@@ -311,18 +317,21 @@ export abstract class GitRefCreator {
             case giti.GitRefUpdateStatus.CreateTagPermissionRequired:
                 tl.error(`${this.permissionTemplate}Create Tag`);
                 break;
+            default:
+                tl.error(`Unknown UpdateStatus: ${updateResult.updateStatus} (${giti.GitRefUpdateStatus[updateResult.updateStatus]})`);
+                break;
         }
 
         tl.error(`If you need to change permissions see: _admin/_versioncontrol?_a=security&repositoryId=${artifact.repositoryId}`);
 
-        tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} UpdateStatus: ${updateResult.updateStatus} RepositoryId: ${updateResult.repositoryId} Old Commit: ${updateResult.oldObjectId} New Commit: ${updateResult.newObjectId}`);
+        tl.setResult(tl.TaskResult.Failed, `Unable to create ref: ${this.refName} UpdateStatus: ${updateResult.updateStatus} (${giti.GitRefUpdateStatus[updateResult.updateStatus]}) RepositoryId: ${updateResult.repositoryId} Old Commit: ${updateResult.oldObjectId} New Commit: ${updateResult.newObjectId}`);
     }
     private async populateExistingRefCommit(artifact: IArtifactData, refName: string, gitapi: git.IGitApi) {
         tl.debug(`Getting refs for: '${refName}' with repositoryId: '${artifact.repositoryId}'`);
 
         let refs: giti.GitRef[] = await gitapi.getRefs(artifact.repositoryId, null, refName);
-        if (refs == null) {
-            tl.debug(`No refs returned`);
+        if (refs == null || Object.keys(refs).length === 0) {
+            tl.debug(`No refs returned for '${refName}'`);
             return;
         }
 
@@ -346,7 +355,7 @@ export abstract class GitRefCreator {
         let refArray: giti.GitRefUpdate[] = [ref];
         let updateRefsResult: giti.GitRefUpdateResult[] = await gitapi.updateRefs(refArray, artifact.repositoryId);
         if (updateRefsResult == null || updateRefsResult.length === 0) {
-            tl.warning(`No update result returned from updateRefs`);
+            tl.warning(`No update result returned from updateRefs for '${refName}'`);
             return null;
         }
 
